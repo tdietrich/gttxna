@@ -1,0 +1,34 @@
+﻿<Application 
+    x:Class="gtt.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"       
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+     xmlns:xna="clr-namespace:Microsoft.Xna.Framework;assembly=Microsoft.Xna.Framework.Interop">
+
+    <!--Application Resources-->
+    <Application.Resources>
+        <!--DEFINICJA GLOBALNEGO PASKA APLIKACJI-->
+        <shell:ApplicationBar x:Key="GlobalAppMenuBar" Opacity="1" IsVisible="True" IsMenuEnabled="True">
+            <shell:ApplicationBar.MenuItems>
+                <!--Definicja elementów menu, wp zawsze da male litery w itemach bez wzgledu na to co damy w text-->
+                <shell:ApplicationBarMenuItem Text="options" IsEnabled="True" Click="AppBarOptions_Click"></shell:ApplicationBarMenuItem>
+                <shell:ApplicationBarMenuItem Text="help" IsEnabled="True" Click="AppBarHelp_Click"></shell:ApplicationBarMenuItem>
+                <shell:ApplicationBarMenuItem Text="about" IsEnabled="True" Click="AppBarCredits_Click"></shell:ApplicationBarMenuItem>
+            </shell:ApplicationBar.MenuItems>
+
+        </shell:ApplicationBar>
+    </Application.Resources>
+
+    <Application.ApplicationLifetimeObjects>
+        <!--Required object that handles lifetime events for the application-->
+        <shell:PhoneApplicationService 
+            Launching="Application_Launching" Closing="Application_Closing" 
+            Activated="Application_Activated" Deactivated="Application_Deactivated"/>
+
+
+    <!--The SharedGraphicsDeviceManager is used to render with the XNA Graphics APIs-->
+    <xna:SharedGraphicsDeviceManager />
+    </Application.ApplicationLifetimeObjects>
+
+</Application>
