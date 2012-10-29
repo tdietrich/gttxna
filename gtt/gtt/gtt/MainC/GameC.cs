@@ -49,7 +49,6 @@ namespace gtt.MainC
         /// <param name="game"></param>
         public GameC()
         {
-          
 
         }
 
