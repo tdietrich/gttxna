@@ -72,6 +72,7 @@
     <Compile Include="ConvertUnits.cs" />
     <Compile Include="DebugView.cs" />
     <Compile Include="DebugViewXNA.cs" />
+    <Compile Include="MainC\GameC.cs" />
     <Compile Include="Pages\About.xaml.cs">
       <DependentUpon>About.xaml</DependentUpon>
     </Compile>

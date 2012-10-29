@@ -15,6 +15,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using FarseerPhysics.Controllers;
 using FarseerPhysics.Common;
+using gtt.MainC;
 
 namespace gtt
 {
@@ -24,12 +25,12 @@ namespace gtt
   
         private GameTimer timer;
         private SpriteBatch spriteBatch;
-        private Texture2D tex;
-        private World world;
-        private Rectangle rect;
-        private DebugViewXNA debugView;
-        private Body _floor;
-        private float counter;
+
+        /// <summary>
+        ///  Klasa Wrapper ogólna dla gry - tu jest wszystko
+        /// </summary>
+        public GameC game;
+
 
         public GamePage()
         {
@@ -37,7 +38,9 @@ namespace gtt
 
             // Get the content manager from the application
             contentManager = (Application.Current as App).Content;
+            //game1 = new Game1();
 
+            game = new GameC();
             // Create a timer for this page
             timer = new GameTimer();
             timer.UpdateInterval = TimeSpan.FromTicks(333333);
@@ -45,6 +48,10 @@ namespace gtt
             timer.Draw += OnDraw;
         }
 
+        /// <summary>
+        /// Inicjalizacja
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             // Set the sharing mode of the graphics device to turn on XNA rendering
@@ -53,38 +60,10 @@ namespace gtt
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
-            // TODO: use this.content to load your game content here
-            tex = contentManager.Load<Texture2D>("ApplicationIcon");
             
-            // Inicjalizacja świata
-            if (world == null)
-            {
-                world = new World(Vector2.UnitY*10);
-            }
-            else
-            {
-                world.Clear();
-            }
-
-            if (debugView == null)
-            {
-                debugView = new DebugViewXNA(world);
-                debugView.RemoveFlags(FarseerPhysics.DebugViewFlags.Controllers);
-                debugView.RemoveFlags(FarseerPhysics.DebugViewFlags.Joint);
-
-                debugView.LoadContent(SharedGraphicsDeviceManager.Current.GraphicsDevice, contentManager);
-            }
-
-            _floor = BodyFactory.CreateRectangle(world,
-                                                ConvertUnits.ToSimUnits(480),
-                                                ConvertUnits.ToSimUnits(50),
-                                                10f);
-            _floor.Position = ConvertUnits.ToSimUnits(240, 775);
-            _floor.IsStatic = true;
-            _floor.Restitution = 0.2f;
-            _floor.Friction = 0.2f;
-                                                
-
+            // Odpalenie gry
+           // game1.Run();
+            game.Initialize();
 
             // Start the timer
             timer.Start();
@@ -110,51 +89,10 @@ namespace gtt
         private void OnUpdate(object sender, GameTimerEventArgs e)
         {
             // TODO: Add your update logic here
-
-            counter += (float)e.ElapsedTime.TotalSeconds;
-
-            if (counter >= 1.0f)
-            {
-                counter = 0f;
-
-                var random = new Random();
-                var width = random.Next(20, 100);
-                var height = random.Next(20, 100);
-
-                // Create it and store the size in the user data
-                var box = BodyFactory.CreateRectangle(
-                         world,
-                         ConvertUnits.ToSimUnits(width),
-                         ConvertUnits.ToSimUnits(height),
-                         10f,
-                         new Microsoft.Xna.Framework.Point(width, height));
-  
-                box.BodyType = BodyType.Dynamic;
-                box.Restitution = 0.2f;
-                box.Friction = 0.2f;
-  
-                // Randomly pick a location along the top to drop it from
-                box.Position = ConvertUnits.ToSimUnits(random.Next(50, 400), 0);
-                                                      
+            GameTime gt = new GameTime(e.TotalTime, e.ElapsedTime);
+            game.Update(gt);
 
 
-
-            }
-            world.Step(Math.Min((float)e.ElapsedTime.TotalMilliseconds * 0.001f, (1f / 30f)));
-
-            foreach(var box in from box in world.BodyList
-                    let pos = ConvertUnits.ToDisplayUnits(box.Position)
-                    where pos.Y >  SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height
-                    select box)
-            {
-                world.RemoveBody(box);
-            }
-
-        }
-
-        private void UpdateBlock(GameTimerEventArgs e)
-        {
-            
         }
 
         /// <summary>
@@ -162,17 +100,20 @@ namespace gtt
         /// </summary>
         private void OnDraw(object sender, GameTimerEventArgs e)
         {
+            //GameTime gt = new GameTime(e.TotalTime,e.ElapsedTime);
+            //game.Draw(gt);
             SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-         spriteBatch.Begin();
- 
-         var projection = Matrix.CreateOrthographicOffCenter(0f,
-             ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width),
-             ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
-             1f);
+            spriteBatch.Begin();
 
-         debugView.RenderDebugData(ref projection);
-         spriteBatch.End();
+            var projection = Matrix.CreateOrthographicOffCenter(0f,
+                ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width),
+                ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
+                1f);
+
+            game.debugView.RenderDebugData(ref projection);
+            spriteBatch.End();
+            
 
         }
     }
