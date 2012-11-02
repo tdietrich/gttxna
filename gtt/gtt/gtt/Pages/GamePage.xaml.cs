@@ -104,15 +104,22 @@ namespace gtt
             //game.Draw(gt);
             SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            /*
+             * RYSOWANIE
+             */
+           spriteBatch.Begin();
+                
+                var projection = Matrix.CreateOrthographicOffCenter(0f,
+                    ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width),
+                    ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
+                    1f);
 
-            var projection = Matrix.CreateOrthographicOffCenter(0f,
-                ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width),
-                ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
-                1f);
-
-            game.debugView.RenderDebugData(ref projection);
+               game.debugView.RenderDebugData(ref projection);
             spriteBatch.End();
+
+            // Przygotowanie do rysowania w klasie Game
+            var gt = new GameTime(e.TotalTime, e.ElapsedTime);
+            //game.Draw(gt);
             
 
         }

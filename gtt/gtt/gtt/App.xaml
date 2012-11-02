@@ -15,6 +15,7 @@
                 <shell:ApplicationBarMenuItem Text="options" IsEnabled="True" Click="AppBarOptions_Click"></shell:ApplicationBarMenuItem>
                 <shell:ApplicationBarMenuItem Text="help" IsEnabled="True" Click="AppBarHelp_Click"></shell:ApplicationBarMenuItem>
                 <shell:ApplicationBarMenuItem Text="about" IsEnabled="True" Click="AppBarCredits_Click"></shell:ApplicationBarMenuItem>
+                <shell:ApplicationBarMenuItem Text="score" IsEnabled="True" Click="AppBarHighScores_Click"></shell:ApplicationBarMenuItem>
             </shell:ApplicationBar.MenuItems>
 
         </shell:ApplicationBar>

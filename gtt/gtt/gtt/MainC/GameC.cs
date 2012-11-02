@@ -32,14 +32,28 @@ namespace gtt.MainC
         /// </summary>
         public ContentManager contentManager;
 
-        // Zmiene ponizej tylko na chwilę, ogarnąć strukturę
+        /// <summary>
+        /// Tekstury temporalne
+        /// </summary>
         private Texture2D tex;
+        private Texture2D tex2;
+        private Texture2D tex3;
+
+        /// <summary>
+        /// Na razie burdel w zmiennych, nie opisuje daltego
+        /// </summary>
         private Rectangle rect;
+
         public DebugViewXNA debugView;
+
         private Body _floor;
+        private Sprite _floorS;
+        private Sprite _platformS;
         private Body _platform;
         private float counter;
-
+        private Block OurBlock;
+        private SpriteBatch spriteBatch;
+        public static float BlockSize;
         #endregion
 
         #region Methods
@@ -59,16 +73,18 @@ namespace gtt.MainC
         /// </summary>
         public void Initialize()
         {
+            //Ustalenie rozmiaru bloku
+            BlockSize = 0.2f;
 
 
             // Get the content manager from the application
             contentManager = (Application.Current as App).Content;
-
+            spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
             // Inicjalizacja świata
             if (world == null)
             {
-                world = new World(Vector2.UnitY * 2);
+                world = new World(Vector2.UnitY * 3);
             }
             else
             {
@@ -84,25 +100,29 @@ namespace gtt.MainC
                 debugView.LoadContent(SharedGraphicsDeviceManager.Current.GraphicsDevice, contentManager);
             }
 
+            // Tworzenie podlogi
             _floor = BodyFactory.CreateRectangle(world,
                                                 ConvertUnits.ToSimUnits(480),
                                                 ConvertUnits.ToSimUnits(50),
                                                 10f);
             _floor.Position = ConvertUnits.ToSimUnits(240, 775);
+            _floor.BodyType = BodyType.Static;
             _floor.IsStatic = true;
             _floor.Restitution = 0.2f;
             _floor.Friction = 0.2f;
 
+            // Tworzenie platformy
             _platform = BodyFactory.CreateRectangle(world,
                                                 ConvertUnits.ToSimUnits(250),
                                                 ConvertUnits.ToSimUnits(50),
                                                 10f);
             _platform.Position = ConvertUnits.ToSimUnits(240, 725);
+            _platform.BodyType = BodyType.Static;
             _platform.IsStatic = true;
             _platform.Restitution = 0.2f;
             _platform.Friction = 1.0f;
 
-
+            
             LoadContent();
 
 
@@ -114,7 +134,14 @@ namespace gtt.MainC
         protected void LoadContent()
         {
             // TODO: use this.content to load your game content here
+            // Tymczasowe textury, syf i mogiła, na razie nie używane, ale nie wywalać.
             tex = contentManager.Load<Texture2D>("ApplicationIcon");
+            tex2 = contentManager.Load<Texture2D>("asdawdas");
+            tex3 = contentManager.Load<Texture2D>("floor");
+
+            OurBlock = new Block(BLOCKTYPES.Z_SHAPE, ref world, tex);
+            _floorS = new Sprite(tex3);
+            _platformS = new Sprite(tex2);
 
         }
 
@@ -126,32 +153,14 @@ namespace gtt.MainC
         {
             counter += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (counter >= 1.0f)
+            if (counter >= 2.0f)
             {
                 counter = 0f;
 
                 var random = new Random();
-                var width = random.Next(20, 100);
-                var height = random.Next(20, 100);
+                var type = random.Next(1,7);
 
-                // Create it and store the size in the user data
-                var box = BodyFactory.CreateRectangle(
-                         world,
-                         ConvertUnits.ToSimUnits(width),
-                         ConvertUnits.ToSimUnits(height),
-                         10f,
-                         new Microsoft.Xna.Framework.Point(width, height));
-
-                box.BodyType = BodyType.Dynamic;
-                box.Inertia = 0.5f;
-                box.Restitution = 0.0f;
-                box.Friction = 0.2f;
-
-                // Randomly pick a location along the top to drop it from
-                box.Position = ConvertUnits.ToSimUnits(random.Next(50, 400), 0);
-
-
-
+                var block = new Block((BLOCKTYPES)type, ref world, tex);
 
             }
             //world.Step(0.5f);
@@ -168,12 +177,27 @@ namespace gtt.MainC
         }
         
         /// <summary>
-        /// Rysowanie
+        /// Rysowanie, jeszcze burdel tu jest na razie i tak rysowanie w klasie GAmePage
         /// </summary>
         /// <param name="gameTime"></param>
         public  void Draw(GameTime gameTime)
         {
-         
+            SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            spriteBatch.Begin();
+
+                spriteBatch.Draw(_floorS.Texture, ConvertUnits.ToDisplayUnits(_floor.Position), null,
+                                               Color.White, _floor.Rotation,
+                                               _floorS.Origin, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(_platformS.Texture, ConvertUnits.ToDisplayUnits(_platform.Position), null,
+                                           Color.White, _platform.Rotation,
+                                           _platformS.Origin, 1f, SpriteEffects.None, 0f);
+            //spriteBatch.Draw(tex, ConvertUnits.ToDisplayUnits(rectangles.Position), null,
+            //                           Color.White, rectangles.Rotation,
+            //                           rectangleSprite.Origin + offset, 1f, SpriteEffects.None, 0f);
+            spriteBatch.End();
+
+            //OurBlock.Draw(gameTime);
             // Rysowanie odbywa się w klasie GamePage.xaml.cs wlasciwie
         }
 

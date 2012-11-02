@@ -231,6 +231,17 @@ namespace gtt
             root.Navigate(new Uri("/Pages/Options.xaml", UriKind.Relative));
         }
 
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AppBarHighScores_Click(object sender, EventArgs e)
+        {
+            PhoneApplicationFrame root = Application.Current.RootVisual as PhoneApplicationFrame;
+            root.Navigate(new Uri("/Pages/HighScores.xaml", UriKind.Relative));
+        }
         #endregion
     }
 }
