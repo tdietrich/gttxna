@@ -31,7 +31,6 @@ namespace gtt
         /// </summary>
         public GameC game;
 
-
         public GamePage()
         {
             InitializeComponent();
@@ -115,7 +114,10 @@ namespace gtt
                     1f);
 
                game.debugView.RenderDebugData(ref projection);
+               
             spriteBatch.End();
+
+
 
             // Przygotowanie do rysowania w klasie Game
             var gt = new GameTime(e.TotalTime, e.ElapsedTime);

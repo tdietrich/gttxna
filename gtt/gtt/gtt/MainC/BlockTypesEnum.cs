@@ -13,6 +13,8 @@ namespace gtt.MainC
 {
     /// <summary>
     /// Typy bloków - klocków w tetrisie.
+    /// 
+    /// autor: Tomasz Dietrich
     /// </summary>
     public enum BLOCKTYPES
     {

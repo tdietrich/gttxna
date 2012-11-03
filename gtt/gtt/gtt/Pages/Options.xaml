@@ -27,7 +27,13 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0"></Grid>
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
+            <Slider Height="84" HorizontalAlignment="Left" Margin="12,92,0,0" Name="bouncSlider" VerticalAlignment="Top" Width="403" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,56,0,0" Name="textBlock1" Text="Blocks Bounciness" VerticalAlignment="Top" FontSize="23" />
+            <!-- Wartosc slidera /10, tzn defaultowo wartosc 5 co oznacza friction 0.5-->
+            <Slider Height="84" HorizontalAlignment="Left" Margin="12,195,0,0" Name="frictSlider" VerticalAlignment="Top" Width="403" Value="5" />
+            <TextBlock FontSize="23" Height="30" HorizontalAlignment="Left" Margin="12,159,0,0" Name="textBlock2" Text="Blocks Friction" VerticalAlignment="Top" />
+        </Grid>
     </Grid>
  
     <!--Sample code showing usage of ApplicationBar-->

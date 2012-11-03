@@ -12,6 +12,8 @@ namespace gtt.MainC
     /// <summary>
     /// Klasa przedstawiające tetrisowy klocek.
     /// Używane w klasie też - <seealso cref="BlockTypesEnum"/>
+    /// 
+    /// autor: Tomasz Dietrich
     /// </summary>
     /// 
     public class Block
@@ -21,8 +23,13 @@ namespace gtt.MainC
 
         private Border border;
         private Sprite rectangleSprite;
-        private Body rectangles;
+        private Body myBody;
         private Vector2 offset;
+
+        /// <summary>
+        /// Początkowa rotacja klocka, klocek nie zawsze znajduje się w 'standardowym' polozeniu na poczatku.
+        /// </summary>
+        public float initialRotation { private set; get; }
 
         /// <summary>
         /// 
@@ -54,13 +61,21 @@ namespace gtt.MainC
         /// Constructor
         /// </summary>
         /// <param name="type">Typ klocka, pobrany z BlockTypesEnum</param>
-        public Block(BLOCKTYPES _type, ref World _worldRef,Texture2D texture)
+        public Block(ref World _worldRef, Texture2D texture, BLOCKTYPES _type, float rotation)
         {
+            // Przypisania
             type = _type;
             worldRef = _worldRef;
             tex = texture;
+
+            // Stworzenie zmiennej do rysowania
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
-            rectangles = new Body(worldRef);
+
+            // Stworzenie nowego ciała
+            myBody = new Body(worldRef);
+            myBody.Restitution = GameC.Settings.blocksRestitution;
+            myBody.Friction = GameC.Settings.blocksFriction;
+            initialRotation= rotation;
             InitializeBlock();
         }
 
@@ -69,22 +84,20 @@ namespace gtt.MainC
         /// </summary>
         private void InitializeBlock()
         {
-            // Funnkcja Tworzy cialo skladjace sie z wielu kwadratow w zaleznosci od typu tetrisowego klocka
+            // Funnkcja Tworzy cialo w zmiennej myBody, skladjace sie z wielu kwadratow w zaleznosci od typu tetrisowego klocka
             MakeMe(type);
             
-            rectangles.BodyType = BodyType.Dynamic;
+            myBody.BodyType = BodyType.Dynamic;
             var rand = new Random();
             int y = rand.Next(120, 200);
 
-            rectangles.Position = ConvertUnits.ToSimUnits(y, 200);
-            //rectangles.Inertia = 0.5f;
-            rectangles.Restitution = 0.0f;
-            rectangles.Friction = 0.2f;
+            myBody.Position = ConvertUnits.ToSimUnits(y, 200);
 
             // Offset drugiego klocka
-            offset = new Vector2(ConvertUnits.ToDisplayUnits(GameC.BlockSize), 0f);
+            offset = new Vector2(ConvertUnits.ToDisplayUnits(GameC.Settings.blockSize), 0f);
 
-            
+            // Rotacja klocka
+            myBody.Rotation = initialRotation;
 
         }
 
@@ -99,7 +112,7 @@ namespace gtt.MainC
             
             for (int i = 1; i < 5; i++)
             {
-                rects.Add(PolygonTools.CreateRectangle(GameC.BlockSize, GameC.BlockSize));
+                rects.Add(PolygonTools.CreateRectangle(GameC.Settings.blockSize, GameC.Settings.blockSize));
             }
 
 
@@ -109,7 +122,7 @@ namespace gtt.MainC
                  case BLOCKTYPES.I_SHAPE:
                      for (int i = 1; i < 5; i++)
                      {
-                         rects[i-1].Translate(new Vector2(0, i *2*GameC.BlockSize));
+                         rects[i-1].Translate(new Vector2(0, i *2*GameC.Settings.blockSize));
                      }
 
                      break;
@@ -121,10 +134,10 @@ namespace gtt.MainC
                      {
                          if (i == 4)
                          {
-                             rects[i-1].Translate(new Vector2(-2 * GameC.BlockSize,i* GameC.BlockSize + (2*GameC.BlockSize)));
+                             rects[i - 1].Translate(new Vector2(-2 * GameC.Settings.blockSize, i * GameC.Settings.blockSize + (2 * GameC.Settings.blockSize)));
                          }
                          else
-                            rects[i-1].Translate(new Vector2(0, i *2*GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(0, i * 2 * GameC.Settings.blockSize));
                          
                      }
 
@@ -138,10 +151,10 @@ namespace gtt.MainC
                      {
                          if (i == 4)
                          {
-                             rects[i-1].Translate(new Vector2(2 * GameC.BlockSize,i* GameC.BlockSize + (2*GameC.BlockSize)));
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, i * GameC.Settings.blockSize + (2 * GameC.Settings.blockSize)));
                          }
                          else
-                            rects[i-1].Translate(new Vector2(0, i *2*GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(0, i * 2 * GameC.Settings.blockSize));
                          
                      }
 
@@ -153,13 +166,13 @@ namespace gtt.MainC
                      for (int i = 1; i < 5; i++)
                      {
                          if (i == 2)
-                            rects[i-1].Translate(new Vector2(2 * GameC.BlockSize,0));
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, 0));
 
                          else if(i == 3)
-                            rects[i-1].Translate(new Vector2(0, 2*GameC.BlockSize));  
+                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.Settings.blockSize));  
                         
                          else if(i == 4)
-                             rects[i - 1].Translate(new Vector2(2 * GameC.BlockSize,2 * GameC.BlockSize));  
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, 2 * GameC.Settings.blockSize));  
 
                      }
                      break;
@@ -169,13 +182,13 @@ namespace gtt.MainC
                      for (int i = 1; i < 5; i++)
                      {
                          if (i == 2)
-                            rects[i-1].Translate(new Vector2(2 * GameC.BlockSize,0));
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, 0));
 
                          else if(i == 3)
-                            rects[i-1].Translate(new Vector2(0, 2*GameC.BlockSize));  
+                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.Settings.blockSize));  
                         
                          else if(i == 4)
-                             rects[i - 1].Translate(new Vector2(-2 * GameC.BlockSize,2 * GameC.BlockSize));  
+                             rects[i - 1].Translate(new Vector2(-2 * GameC.Settings.blockSize, 2 * GameC.Settings.blockSize));  
 
                      }
 
@@ -185,13 +198,13 @@ namespace gtt.MainC
                      for (int i = 1; i < 5; i++)
                      {
                          if (i == 2)
-                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.Settings.blockSize));
 
                          else if (i == 3)
-                             rects[i - 1].Translate(new Vector2(-2 * GameC.BlockSize, 2 * GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(-2 * GameC.Settings.blockSize, 2 * GameC.Settings.blockSize));
 
                          else if (i == 4)
-                             rects[i - 1].Translate(new Vector2(2 * GameC.BlockSize, 2 * GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, 2 * GameC.Settings.blockSize));
 
                      }
 
@@ -200,31 +213,31 @@ namespace gtt.MainC
                      for (int i = 1; i < 5; i++)
                      {
                          if (i == 2)
-                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(0, 2 * GameC.Settings.blockSize));
 
                          else if (i == 3)
-                             rects[i - 1].Translate(new Vector2(2 * GameC.BlockSize, 2 * GameC.BlockSize));
+                             rects[i - 1].Translate(new Vector2(2 * GameC.Settings.blockSize, 2 * GameC.Settings.blockSize));
 
                          else if (i == 4)
-                             rects[i - 1].Translate(new Vector2(-2 * GameC.BlockSize,0));
+                             rects[i - 1].Translate(new Vector2(-2 * GameC.Settings.blockSize, 0));
 
                      }
 
 
                      break;
              }
-            rectangles = BodyFactory.CreateCompoundPolygon(worldRef, rects, 1f);
+            myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 1f);
         }
 
         public void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();
-                spriteBatch.Draw(tex, ConvertUnits.ToDisplayUnits(rectangles.Position), null,
-                                       Color.White, rectangles.Rotation,
+                spriteBatch.Draw(tex, ConvertUnits.ToDisplayUnits(myBody.Position), null,
+                                       Color.White, myBody.Rotation,
                                        rectangleSprite.Origin + offset, 1f, SpriteEffects.None, 0f);
                     // draw second rectangle
-                spriteBatch.Draw(tex, ConvertUnits.ToDisplayUnits(rectangles.Position), null, Color.White,
-                                 rectangles.Rotation, rectangleSprite.Origin - offset, 1f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(tex, ConvertUnits.ToDisplayUnits(myBody.Position), null, Color.White,
+                                 myBody.Rotation, rectangleSprite.Origin - offset, 1f, SpriteEffects.None, 0f);
             spriteBatch.End();
         }
 

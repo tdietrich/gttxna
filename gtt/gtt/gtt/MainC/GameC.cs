@@ -12,6 +12,8 @@ namespace gtt.MainC
 {
     /// <summary>
     /// Klasa, zarządza całą grą, światem fizycznym itp.
+    /// 
+    /// autor: Tomasz Dietrich
     /// </summary>
     public class GameC
     {
@@ -40,42 +42,61 @@ namespace gtt.MainC
         private Texture2D tex3;
 
         /// <summary>
-        /// Na razie burdel w zmiennych, nie opisuje daltego
+        /// Widok
         /// </summary>
-        private Rectangle rect;
-
         public DebugViewXNA debugView;
 
+        /// <summary>
+        /// Ciało - podłoga
+        /// </summary>
         private Body _floor;
-        private Sprite _floorS;
-        private Sprite _platformS;
+
+        /// <summary>
+        /// Ciało platforma
+        /// </summary>
         private Body _platform;
+
+        /// <summary>
+        /// Sprite Podłogi
+        /// </summary>
+        private Sprite _floorS;
+
+        /// <summary>
+        /// Sprite platformy
+        /// </summary>
+        private Sprite _platformS;
+
+        /// <summary>
+        /// Licznik do 'wypluwania' klocków
+        /// </summary>
         private float counter;
-        private Block OurBlock;
+
         private SpriteBatch spriteBatch;
-        public static float BlockSize;
+
+        /// <summary>
+        /// Struktura trzymające settingsy gry
+        /// </summary>
+        public static GameSettings Settings;
+
         #endregion
 
         #region Methods
+       
         /// <summary>
         /// Konstruktor
         /// </summary>
         /// <param name="game"></param>
         public GameC()
         {
-
+            // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
+            Settings = new GameSettings(0.5f, 0.0f,0.2f);
         }
-
-
 
         /// <summary>
         /// Metoda  wywolywana przed rysowaniem
         /// </summary>
         public void Initialize()
         {
-            //Ustalenie rozmiaru bloku
-            BlockSize = 0.2f;
-
 
             // Get the content manager from the application
             contentManager = (Application.Current as App).Content;
@@ -139,7 +160,7 @@ namespace gtt.MainC
             tex2 = contentManager.Load<Texture2D>("asdawdas");
             tex3 = contentManager.Load<Texture2D>("floor");
 
-            OurBlock = new Block(BLOCKTYPES.Z_SHAPE, ref world, tex);
+            //OurBlock = new Block(BLOCKTYPES.Z_SHAPE, ref world, tex);
             _floorS = new Sprite(tex3);
             _platformS = new Sprite(tex2);
 
@@ -157,10 +178,15 @@ namespace gtt.MainC
             {
                 counter = 0f;
 
+                // Losowanie randomowego typu bloku
                 var random = new Random();
                 var type = random.Next(1,7);
 
-                var block = new Block((BLOCKTYPES)type, ref world, tex);
+                // Losowanie randomowego obrotu klocka, od 0 do 360
+                float rot = (float)random.Next(0,360);
+
+                // Stworzenie bloku = jednoznacze z dodaniem go do świata
+                var block = new Block(ref world, tex, (BLOCKTYPES)type, rot);
 
             }
             //world.Step(0.5f);
@@ -205,4 +231,26 @@ namespace gtt.MainC
 
 
     }
+
+
+    #region Game Setting Struct
+    public struct GameSettings
+    {
+        /// <summary>
+        /// Konstruktor
+        /// </summary>
+        /// <param name="friction">tarcie klocków</param>
+        /// <param name="restitution">odbijalnosc klockos</param>
+        public GameSettings(float friction,float restitution,float _blockSize)
+        {
+            blocksFriction = friction;
+            blocksRestitution = restitution;
+            blockSize = _blockSize;
+        }
+        public float blocksFriction;
+        public float blocksRestitution;
+        public float blockSize;
+    }
+
+    #endregion
 }
