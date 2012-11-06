@@ -31,6 +31,8 @@ namespace gtt
         /// </summary>
         public GameC game;
 
+        public UIElementRenderer elementRenderer;
+
         public GamePage()
         {
             InitializeComponent();
@@ -45,6 +47,8 @@ namespace gtt
             timer.UpdateInterval = TimeSpan.FromTicks(333333);
             timer.Update += OnUpdate;
             timer.Draw += OnDraw;
+
+            LayoutUpdated += new EventHandler(GamePage_LayoutUpdated);
         }
 
         /// <summary>
@@ -82,6 +86,27 @@ namespace gtt
         }
 
         /// <summary>
+        /// UpdateLayout
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void GamePage_LayoutUpdated(object sender, EventArgs e)
+        {
+            if ((ActualWidth > 0) && (ActualHeight > 0))
+            {
+                SharedGraphicsDeviceManager.Current.PreferredBackBufferWidth = (int)ActualWidth;
+                SharedGraphicsDeviceManager.Current.PreferredBackBufferHeight = (int)ActualHeight;
+            }
+
+            if (null == elementRenderer)
+            {
+                elementRenderer = new UIElementRenderer(this, (int)ActualWidth, (int)ActualHeight);
+            }
+
+
+        }
+        
+        /// <summary>
         /// Allows the page to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
@@ -99,6 +124,11 @@ namespace gtt
         /// </summary>
         private void OnDraw(object sender, GameTimerEventArgs e)
         {
+            // REnderowanie UI, jako tekstury xna
+            elementRenderer.Render();
+
+
+
             //GameTime gt = new GameTime(e.TotalTime,e.ElapsedTime);
             //game.Draw(gt);
             SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -114,16 +144,42 @@ namespace gtt
                     1f);
 
                game.debugView.RenderDebugData(ref projection);
-               
+
+               // Draws user hud
+               DrawHud();
+
+               // Tutaj rysujemy interfejs silverlightowy, ale zamieniony/przerenderowany na 
+               // Xna texture.
+               spriteBatch.Draw(elementRenderer.Texture, Vector2.Zero, Color.White);
+                
+
+
             spriteBatch.End();
+
+
+            /*
+             * 
+             * Renderowanie UI w grze
+             * */
 
 
 
             // Przygotowanie do rysowania w klasie Game
-            var gt = new GameTime(e.TotalTime, e.ElapsedTime);
+            //ar gt = new GameTime(e.TotalTime, e.ElapsedTime);
             //game.Draw(gt);
             
 
+        }
+
+        /// <summary>
+        /// Funkcja rysująca interfejs uzytkownika w grze
+        /// </summary>
+        private void DrawHud()
+        {
+            ScoreText.Text = "Score:";
+            scoreAmount.Text = "0";
+            LevelText.Text = "Level:";
+            LevelAmount.Text = "1";
         }
     }
 }

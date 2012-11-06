@@ -18,6 +18,7 @@ namespace gtt.Pages
         public HighScores()
         {
             InitializeComponent();
+            
         }
     }
 }

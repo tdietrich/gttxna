@@ -12,6 +12,22 @@
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d" d:DesignHeight="800" d:DesignWidth="480"
     shell:SystemTray.IsVisible="False">
+
+    <!--LayoutRoot is the root grid where all page content is placed-->
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80"/>
+            <RowDefinition Height="720*" />
+        </Grid.RowDefinitions>
+
+        <!--TitlePanel contains the name of the application and page title-->
+        <TextBlock Height="30" HorizontalAlignment="Left" Margin="102,22,0,0" Name="scoreAmount" Text="TextBlock" VerticalAlignment="Top" />
+        <TextBlock FontSize="18.667" Height="31" HorizontalAlignment="Left" Margin="223,21,0,0" Name="LevelText" Text="TextBlock" TextWrapping="Wrap" VerticalAlignment="Top" Width="169" />
+        <TextBlock Height="30" HorizontalAlignment="Left" Margin="309,20,0,0" Name="LevelAmount" Text="TextBlock" VerticalAlignment="Top" />
+        <TextBlock x:Name="ScoreText" TextWrapping="Wrap" Text="TextBlock" Width="84" Height="33" FontSize="18.667" Margin="12,23,384,24" />
+    </Grid>
+    
+    
     
     <!--No XAML content is required as the page is rendered entirely with the XNA Framework-->
 

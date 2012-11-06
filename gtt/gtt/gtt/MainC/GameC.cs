@@ -229,11 +229,14 @@ namespace gtt.MainC
 
         #endregion
 
-
     }
 
 
     #region Game Setting Struct
+
+    /// <summary>
+    /// Struktura trzymająca dane ustawien gry
+    /// </summary>
     public struct GameSettings
     {
         /// <summary>
