@@ -89,7 +89,7 @@ namespace gtt.MainC
         public GameC()
         {
             // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
-            Settings = new GameSettings(0.5f, 0.0f,0.2f);
+            Settings = new GameSettings(3.0f, 0.0f, 0.2f);
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace gtt.MainC
             _floor.Position = ConvertUnits.ToSimUnits(240, 775);
             _floor.BodyType = BodyType.Static;
             _floor.IsStatic = true;
-            _floor.Restitution = 0.2f;
-            _floor.Friction = 0.2f;
+            _floor.Restitution = 0.0f;
+            _floor.Friction = 2.5f;
 
             // Tworzenie platformy
             _platform = BodyFactory.CreateRectangle(world,
@@ -140,8 +140,8 @@ namespace gtt.MainC
             _platform.Position = ConvertUnits.ToSimUnits(240, 725);
             _platform.BodyType = BodyType.Static;
             _platform.IsStatic = true;
-            _platform.Restitution = 0.2f;
-            _platform.Friction = 1.0f;
+            _platform.Restitution = 0.0f;
+            _platform.Friction = 3.0f;
 
             
             LoadContent();
