@@ -11,9 +11,14 @@ namespace gtt.MainC
 {
     /// <summary>
     /// Klasa przedstawiające tetrisowy klocek.
-    /// Używane w klasie też - <seealso cref="BlockTypesEnum"/>
+    /// Używane w klasie też - Typy Bloków - <see cref="BlockTypesEnum"/> i struktura settings <see cref="Settings"/>
+    ///
     /// 
     /// autor: Tomasz Dietrich
+    /// 
+    /// TODO:
+    ///     - Jeżeli klocek się obraca to nie obraca się względem środka swojego, trzeba dostosować pozycje
+    ///       Respawna w takim razie.
     /// </summary>
     /// 
     public class Block
@@ -23,11 +28,18 @@ namespace gtt.MainC
 
         private Border border;
         private Sprite rectangleSprite;
-        private Body myBody;
+
+        /// <summary>
+        /// Fizyczne przedstawienie klocka
+        /// </summary>
+        public Body myBody { private set; get; }
+
+
         private Vector2 offset;
 
         /// <summary>
         /// Początkowa rotacja klocka, klocek nie zawsze znajduje się w 'standardowym' polozeniu na poczatku.
+        /// Aby dodać rotacje w czasie gry, dobrac się do myBody.
         /// </summary>
         public float initialRotation { private set; get; }
 
@@ -76,6 +88,8 @@ namespace gtt.MainC
             myBody.Restitution = GameC.Settings.blocksRestitution;
             myBody.Friction = GameC.Settings.blocksFriction;
             initialRotation= rotation;
+
+            // Odpal funkcję inicjalizującą mnie
             InitializeBlock();
         }
 
@@ -86,12 +100,11 @@ namespace gtt.MainC
         {
             // Funnkcja Tworzy cialo w zmiennej myBody, skladjace sie z wielu kwadratow w zaleznosci od typu tetrisowego klocka
             MakeMe(type);
-            
-            myBody.BodyType = BodyType.Dynamic;
-            var rand = new Random();
-            int y = rand.Next(120, 200);
 
-            myBody.Position = ConvertUnits.ToSimUnits(y, 200);
+            myBody.BodyType = BodyType.Dynamic;
+
+            // Pozycja klocka pobrana ze struktury trzymającej ustawienia gry
+            myBody.Position = ConvertUnits.ToSimUnits(GameC.Settings.spawnPoint);
 
             // Offset drugiego klocka
             offset = new Vector2(ConvertUnits.ToDisplayUnits(GameC.Settings.blockSize), 0f);
@@ -101,6 +114,13 @@ namespace gtt.MainC
 
         }
 
+
+
+        /// <summary>
+        /// Funkcja w zaleznosci od typu klocka tetrisowego, tworzy ciało skłądające się z kwadratów
+        /// o odpowiednim ułożeniu
+        /// </summary>
+        /// <param name="type">Typ Bloku</param>
         private void MakeMe(BLOCKTYPES type)
         {
             // Lista wierzchołków kwadratów
@@ -229,6 +249,11 @@ namespace gtt.MainC
             myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 1f);
         }
 
+
+        /// <summary>
+        /// Rysuj
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Draw(GameTime gameTime)
         {
             spriteBatch.Begin();

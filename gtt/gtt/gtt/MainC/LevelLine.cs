@@ -10,6 +10,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace gtt.MainC
 {
@@ -29,14 +30,9 @@ namespace gtt.MainC
         public int height;
 
         /// <summary>
-        /// SpriteBatch do rysowania
+        /// Wierzchołki
         /// </summary>
-        private PrimitiveBatch primitiveBatch;
-
-        /// <summary>
-        /// Linia
-        /// </summary>
-        private Line myLine;
+        public VertexPositionColor[] vertices { private set; get; }
 
         /// <summary>
         /// Tekst informujacy o wysokosci
@@ -46,16 +42,24 @@ namespace gtt.MainC
         /// <summary>
         /// Konstruktor
         /// </summary>
-        public LevelLine(int _height)
+        public LevelLine(int _height, GraphicsDevice graphic)
         {
+            if (_height <= 100)
+                throw new Exception("Ustawianie wysokosci ponizej 100 jest bez sensu, ");
+
             // Przypisania, tworzenie obiektow
             height = _height;
-            myLine = new Line();
             heightText = new TextBlock();
             // Wypelnienie linii textem
             heightText.Text = height.ToString() + "m";
 
+            var realHeight = graphic.Viewport.Height - _height;
 
+            vertices = new VertexPositionColor[2];
+            vertices[0].Position = new Vector3(0, realHeight, 0);
+            vertices[0].Color = Color.White;
+            vertices[1].Position = new Vector3(graphic.Viewport.Width, realHeight, 0);
+            vertices[1].Color = Color.White;
         }
 
     }

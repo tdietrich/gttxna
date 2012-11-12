@@ -26,6 +26,8 @@ namespace gtt
         private GameTimer timer;
         private SpriteBatch spriteBatch;
 
+
+        private BasicEffect basicEffect;
         /// <summary>
         ///  Klasa Wrapper ogólna dla gry - tu jest wszystko
         /// </summary>
@@ -70,6 +72,17 @@ namespace gtt
 
             // Start the timer
             timer.Start();
+
+
+            // Standardowy "Efekt" do rysowania prymitywów w XNA
+            basicEffect = new BasicEffect(SharedGraphicsDeviceManager.Current.GraphicsDevice);
+            basicEffect.VertexColorEnabled = true;
+            basicEffect.Projection = Matrix.CreateOrthographicOffCenter
+               (0, SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width,     // left, right
+                SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height, 0,    // bottom, top
+                0, 1);                                         // near, far plane
+
+
 
             base.OnNavigatedTo(e);
         }
@@ -133,6 +146,11 @@ namespace gtt
             //game.Draw(gt);
             SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
+
+            // Rysuj linie poziomów
+            DrawLevelLines();
+
             /*
              * RYSOWANIE
              */
@@ -157,11 +175,7 @@ namespace gtt
             spriteBatch.End();
 
 
-            /*
-             * 
-             * Renderowanie UI w grze
-             * */
-
+           
 
 
             // Przygotowanie do rysowania w klasie Game
@@ -169,6 +183,23 @@ namespace gtt
             //game.Draw(gt);
             
 
+        }
+
+
+        /// <summary>
+        /// Rysuj linie 'leveli'
+        /// </summary>
+        private void DrawLevelLines()
+        {
+            basicEffect.CurrentTechnique.Passes[0].Apply();
+
+            // TODO:
+            //  - Dać tu foricza, że jeżeli linii jeszcze nie widać to nie rysuj!!!!!!!!!!!!
+            foreach (LevelLine line in game.LevelLines)
+            {
+                SharedGraphicsDeviceManager.Current.GraphicsDevice.DrawUserPrimitives<VertexPositionColor>(PrimitiveType.LineList,line.vertices, 0, 1);
+            }
+            
         }
 
         /// <summary>
