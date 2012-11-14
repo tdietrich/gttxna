@@ -8,13 +8,15 @@ using Microsoft.Xna.Framework.Graphics;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using FarseerPhysics.Factories;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Input.Touch;
 
 namespace gtt.MainC
 {
     /// <summary>
     /// Klasa, zarządza całą grą, światem fizycznym itp.
     /// 
-    /// autor: Tomasz Dietrich
+    /// autor: Tomasz Dietrich, Michał Czwarnowski
     /// 
     /// TODO:
     ///     - Blok jeszcze nie dotknął innego - kolizje puste a juz leci następny...?
@@ -177,6 +179,9 @@ namespace gtt.MainC
             // Żaden blok nie spada
             blockOnHisWay = false;
 
+            //Aktywacja gestów - hold do obracania i horizontaldrag do ruszania klockiem
+            TouchPanel.EnabledGestures = GestureType.HorizontalDrag | GestureType.VerticalDrag;
+            
             LoadContent();
 
 
@@ -200,7 +205,7 @@ namespace gtt.MainC
         }
 
         /// <summary>
-        /// Update logiki itp
+        /// Update logiki, sterowanie itp
         /// </summary>
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
@@ -237,6 +242,25 @@ namespace gtt.MainC
 
             // Sprawdzanie kolizji spadającego klocka
             UpdateBlockCollision();
+
+            //Pętla odczytujaca gesty z ekranu
+            while (TouchPanel.IsGestureAvailable)
+            {
+                //odczyt gestu z ekranu
+                GestureSample gesture = TouchPanel.ReadGesture();
+
+                //switch sprawdzający który z gestów z Initialize jest wykonywany
+                switch (gesture.GestureType)
+                {
+                    case GestureType.VerticalDrag:
+                        if (CurrentBlock != null) CurrentBlock.myBody.Rotation += 0.01f * gesture.Delta.Y;
+                        break;
+                    case GestureType.HorizontalDrag:
+                        if (CurrentBlock != null) CurrentBlock.myBody.Position += 0.01f * gesture.Delta;
+                        break;
+                }
+
+            }
 
         }
 
