@@ -113,13 +113,13 @@ namespace gtt.MainC
         public GameC()
         {
             // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
-            Settings = new GameSettings(3.0f, 0.0f, 0.2f, Vector2.UnitY,
+            Settings = new GameSettings(3.0f, 0.1f, 0.2f, new Vector2(0.0f,0.3f),
                                         new Vector2(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width/ 2,40));
 
         }
 
         /// <summary>
-        /// Metoda  wywolywana przed rysowaniem
+        /// Metoda  wywolywana przed LoadContent
         /// </summary>
         public void Initialize()
         {
@@ -174,12 +174,12 @@ namespace gtt.MainC
             _platform.BodyType = BodyType.Static;
             _platform.IsStatic = true;
             _platform.Restitution = 0.0f;
-            _platform.Friction = 3.0f;
+            _platform.Friction = 5.0f;
 
             // Żaden blok nie spada
             blockOnHisWay = false;
 
-            //Aktywacja gestów - hold do obracania i horizontaldrag do ruszania klockiem
+            //Aktywacja gestów - vertical do obracania i horizontaldrag do ruszania klockiem
             TouchPanel.EnabledGestures = GestureType.HorizontalDrag | GestureType.VerticalDrag;
             
             LoadContent();
@@ -222,7 +222,8 @@ namespace gtt.MainC
                 
                 // Stworzenie bloku = jednoznacze z dodaniem go do świata
                 CurrentBlock = new Block(ref world, tex, (BLOCKTYPES)type, rot);
-
+                //CurrentBlock.myBody.IgnoreGravity = true;
+                //CurrentBlock.myBody.LinearVelocity = new Vector2(0, 1);
                 blockOnHisWay = true;
             }
             
@@ -278,7 +279,9 @@ namespace gtt.MainC
             {
                 // Zmien flage.
                 blockOnHisWay = false;
-
+                
+                //CurrentBlock.myBody.LinearVelocity = Vector2.Zero;
+                //CurrentBlock.myBody.IgnoreGravity = false;
                 // Zapomnij tego klocka jako currenta.
                 CurrentBlock = null;
             }

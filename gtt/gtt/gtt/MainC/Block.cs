@@ -85,8 +85,7 @@ namespace gtt.MainC
 
             // Stworzenie nowego ciała
             myBody = new Body(worldRef);
-            myBody.Restitution = GameC.Settings.blocksRestitution;
-            myBody.Friction = GameC.Settings.blocksFriction;
+
             initialRotation= rotation;
 
             // Odpal funkcję inicjalizującą mnie
@@ -112,6 +111,10 @@ namespace gtt.MainC
             // Rotacja klocka
             myBody.Rotation = initialRotation;
 
+            myBody.Restitution = GameC.Settings.blocksRestitution;
+            myBody.Friction = GameC.Settings.blocksFriction;
+
+
         }
 
 
@@ -125,9 +128,6 @@ namespace gtt.MainC
         {
             // Lista wierzchołków kwadratów
             List<Vertices> rects = new List<Vertices>();
-
-            // Translacja
-            Vector2 trans = new Vector2();
             
             
             for (int i = 1; i < 5; i++)
@@ -246,7 +246,7 @@ namespace gtt.MainC
 
                      break;
              }
-            myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 1f);
+            myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 0.4f);
         }
 
 

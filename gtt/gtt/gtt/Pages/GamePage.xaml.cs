@@ -26,13 +26,15 @@ namespace gtt
         private GameTimer timer;
         private SpriteBatch spriteBatch;
 
-
         private BasicEffect basicEffect;
         /// <summary>
         ///  Klasa Wrapper ogólna dla gry - tu jest wszystko
         /// </summary>
         public GameC game;
 
+        /// <summary>
+        /// renderer ui 
+        /// </summary>
         public UIElementRenderer elementRenderer;
 
         public GamePage()
@@ -65,7 +67,6 @@ namespace gtt
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
 
-            
             // Odpalenie gry
            // game1.Run();
             game.Initialize();
@@ -87,6 +88,11 @@ namespace gtt
             base.OnNavigatedTo(e);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             // Stop the timer
@@ -129,7 +135,6 @@ namespace gtt
             GameTime gt = new GameTime(e.TotalTime, e.ElapsedTime);
             game.Update(gt);
 
-
         }
 
         /// <summary>
@@ -141,7 +146,7 @@ namespace gtt
             elementRenderer.Render();
 
 
-
+            
             //GameTime gt = new GameTime(e.TotalTime,e.ElapsedTime);
             //game.Draw(gt);
             SharedGraphicsDeviceManager.Current.GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -154,14 +159,19 @@ namespace gtt
             /*
              * RYSOWANIE
              */
-           spriteBatch.Begin();
+            spriteBatch.Begin();
+
                 
                 var projection = Matrix.CreateOrthographicOffCenter(0f,
                     ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width),
                     ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
                     1f);
 
-               game.debugView.RenderDebugData(ref projection);
+                // Tutaj bedzie przesuwanie ekranu do góry
+                var view = Matrix.CreateTranslation(new Vector3(0, 0, 0)) * projection;
+
+
+                game.debugView.RenderDebugData(ref view);
 
                // Draws user hud
                DrawHud();
