@@ -88,6 +88,7 @@ namespace gtt.MainC
 
             initialRotation= rotation;
 
+            
             // Odpal funkcję inicjalizującą mnie
             InitializeBlock();
         }
@@ -110,11 +111,28 @@ namespace gtt.MainC
 
             // Rotacja klocka
             myBody.Rotation = initialRotation;
-
             myBody.Restitution = GameC.Settings.blocksRestitution;
             myBody.Friction = GameC.Settings.blocksFriction;
+            myBody.Mass = 10;
 
+            // Handler for collision
+            myBody.OnCollision += new OnCollisionEventHandler(myBody_OnCollision);
 
+        }
+
+        /// <summary>
+        /// W momencie gdy ciało skoliduje z jakims innym, ma prędkość ustawiona na 0, i zaczyna na niego wplywac grawitacja
+        /// Takie rozwiązanie umożliwia ukladanie klocków jakies sensowne
+        /// </summary>
+        /// <param name="fixtureA"></param>
+        /// <param name="fixtureB"></param>
+        /// <param name="contact"></param>
+        /// <returns></returns>
+        bool myBody_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            myBody.IgnoreGravity = false;
+            myBody.LinearVelocity = Vector2.Zero;
+            return true;
         }
 
 
@@ -133,6 +151,7 @@ namespace gtt.MainC
             for (int i = 1; i < 5; i++)
             {
                 rects.Add(PolygonTools.CreateRectangle(GameC.Settings.blockSize, GameC.Settings.blockSize));
+                
             }
 
 
@@ -246,7 +265,8 @@ namespace gtt.MainC
 
                      break;
              }
-            myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 0.4f);
+            myBody = BodyFactory.CreateCompoundPolygon(worldRef, rects, 1.0f);
+            
         }
 
 

@@ -48,7 +48,8 @@ namespace gtt
             game = new GameC();
             // Create a timer for this page
             timer = new GameTimer();
-            timer.UpdateInterval = TimeSpan.FromTicks(333333);
+            //timer.UpdateInterval = TimeSpan.FromTicks(1);
+            timer.UpdateInterval = TimeSpan.FromMilliseconds(20);
             timer.Update += OnUpdate;
             timer.Draw += OnDraw;
 
@@ -167,8 +168,11 @@ namespace gtt
                     ConvertUnits.ToSimUnits(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height), 0f, 0f,
                     1f);
 
-                // Tutaj bedzie przesuwanie ekranu do góry
-                var view = Matrix.CreateTranslation(new Vector3(0, 0, 0)) * projection;
+                // Tutaj bedzie przesuwanie ekranu do góry - vector3
+                Vector3 trans = new Vector3(0, game.highestBodyPosition*0.1f, 0);
+                
+
+                var view = Matrix.CreateTranslation(trans) * projection;
 
 
                 game.debugView.RenderDebugData(ref view);
@@ -217,10 +221,10 @@ namespace gtt
         /// </summary>
         private void DrawHud()
         {
-            ScoreText.Text = "Score:";
-            scoreAmount.Text = "0";
-            LevelText.Text = "Level:";
-            LevelAmount.Text = "1";
+            ScoreText.Text = "Poz:";
+            scoreAmount.Text = game.GetPosOfLastBlock();
+            LevelText.Text = "Rot:";
+            LevelAmount.Text = game.GetRotOFLastBlock();
         }
     }
 }

@@ -5,10 +5,8 @@ using Microsoft.Xna.Framework;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using FarseerPhysics.Factories;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 
 namespace gtt.MainC
@@ -20,7 +18,7 @@ namespace gtt.MainC
     /// 
     /// TODO:
     ///     - Blok jeszcze nie dotknął innego - kolizje puste a juz leci następny...?
-    ///     
+    ///     - Odseparować obsluge inputa do oddzielnej klasy
     /// 
     /// 
     /// W tej chwili opadający klocek znajduje się w zmiennej CurrentBlock
@@ -43,6 +41,11 @@ namespace gtt.MainC
         /// Manager tresci - do ladowania np tekstur itp
         /// </summary>
         public ContentManager contentManager;
+
+        /// <summary>
+        /// Lista bloków leżących na platformie
+        /// </summary>
+        protected List<Block> blocksOnPlatform;
 
         /// <summary>
         /// Tekstury temporalne
@@ -102,6 +105,12 @@ namespace gtt.MainC
         /// Linie pokazujące wysokość wieży
         /// </summary>
         public List<LevelLine> LevelLines;
+
+        /// <summary>
+        /// Zmienna trzyma y środka ciała położonego najwyzej
+        /// </summary>
+        public float highestBodyPosition { private set; get; }
+
         #endregion
 
         #region Methods
@@ -113,7 +122,7 @@ namespace gtt.MainC
         public GameC()
         {
             // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
-            Settings = new GameSettings(3.0f, 0.1f, 0.2f, new Vector2(0.0f,0.3f),
+            Settings = new GameSettings(3.0f, 0.01f, 0.2f, new Vector2(0.0f,1.0f),
                                         new Vector2(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width/ 2,40));
 
         }
@@ -123,7 +132,6 @@ namespace gtt.MainC
         /// </summary>
         public void Initialize()
         {
-
             // Get the content manager from the application
             contentManager = (Application.Current as App).Content;
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
@@ -162,7 +170,7 @@ namespace gtt.MainC
             _floor.Position = ConvertUnits.ToSimUnits(240, 775);
             _floor.BodyType = BodyType.Static;
             _floor.IsStatic = true;
-            _floor.Restitution = 0.0f;
+            _floor.Restitution = 0.1f;
             _floor.Friction = 2.5f;
 
             // Tworzenie platformy
@@ -173,7 +181,7 @@ namespace gtt.MainC
             _platform.Position = ConvertUnits.ToSimUnits(240, 725);
             _platform.BodyType = BodyType.Static;
             _platform.IsStatic = true;
-            _platform.Restitution = 0.0f;
+            _platform.Restitution = 0.1f;
             _platform.Friction = 5.0f;
 
             // Żaden blok nie spada
@@ -181,7 +189,10 @@ namespace gtt.MainC
 
             //Aktywacja gestów - vertical do obracania i horizontaldrag do ruszania klockiem
             TouchPanel.EnabledGestures = GestureType.HorizontalDrag | GestureType.VerticalDrag;
-            
+
+            // lista bloków leżących na platformie
+            blocksOnPlatform = new List<Block>();
+
             LoadContent();
 
 
@@ -222,8 +233,10 @@ namespace gtt.MainC
                 
                 // Stworzenie bloku = jednoznacze z dodaniem go do świata
                 CurrentBlock = new Block(ref world, tex, (BLOCKTYPES)type, rot);
-                //CurrentBlock.myBody.IgnoreGravity = true;
-                //CurrentBlock.myBody.LinearVelocity = new Vector2(0, 1);
+               
+                CurrentBlock.myBody.IgnoreGravity = true;
+                CurrentBlock.myBody.LinearVelocity = new Vector2(0f, 0.6f);
+                blocksOnPlatform.Add(CurrentBlock);
                 blockOnHisWay = true;
             }
             
@@ -232,7 +245,9 @@ namespace gtt.MainC
               world.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f, (1f / 3f)));
 
 
-            // Usunięcie Boxów które wypadły za świat
+            // Usunięcie Boxów które wypadły za świat - to nie ebdzie wlasciwie potrzebne bo jezeli
+            // Coś wypadnie za świat to koniec gry
+            
             foreach (var box in from box in world.BodyList
                                 let pos = ConvertUnits.ToDisplayUnits(box.Position)
                                 where pos.Y > SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Height
@@ -241,8 +256,15 @@ namespace gtt.MainC
                 world.RemoveBody(box);
             }
 
+
+           // Thread SprawdzaczKolizji = new Thread(UpdateBlockCollision);
+           // SprawdzaczKolizji.Start();
+
             // Sprawdzanie kolizji spadającego klocka
             UpdateBlockCollision();
+
+            // Zmiana pozycji kamery ze względu na wysokość wieży
+            UpdateHighestBodyPos();
 
             //Pętla odczytujaca gesty z ekranu
             while (TouchPanel.IsGestureAvailable)
@@ -267,6 +289,30 @@ namespace gtt.MainC
 
 
         /// <summary>
+        /// Ustawienie pozycji najwyzszego klocka
+        /// </summary>
+        private void UpdateHighestBodyPos()
+        {
+            /**
+             * 
+             * TODO:
+             *  Ogarnąć sposób obliczania przesunięcia kamery i przesunięcia punktu respawnu klocków
+             *  
+             * **/
+            /*
+            foreach(Block b in blocksOnPlatform)
+            {
+                if (b.myBody.LinearVelocity == Vector2.Zero)
+                {
+                    if (b.myBody.Position.Y > highestBodyPosition)
+                        highestBodyPosition = b.myBody.Position.Y;
+                }
+            }*/
+
+
+        }
+
+        /// <summary>
         /// Sprawdzanie kolizji spadającego klocka
         /// </summary>
         private void UpdateBlockCollision()
@@ -275,16 +321,26 @@ namespace gtt.MainC
             // Innym ciałem, zmien flagę, że można puścić następny kloc.
 
             // TODO: Ogarnąć czy to jest dokladny sposob bo chyba nie.
-            if (CurrentBlock.myBody.ContactList != null)
+            if (CurrentBlock != null)
             {
-                // Zmien flage.
-                blockOnHisWay = false;
-                
-                //CurrentBlock.myBody.LinearVelocity = Vector2.Zero;
-                //CurrentBlock.myBody.IgnoreGravity = false;
-                // Zapomnij tego klocka jako currenta.
-                CurrentBlock = null;
+                if (CurrentBlock.myBody.ContactList != null)
+                {
+                    // Zmien flage.
+                    blockOnHisWay = false;
+
+                    //blocksOnPlatform.Add(CurrentBlock);
+                    pos = CurrentBlock.myBody.Position;
+                    rot = CurrentBlock.myBody.Rotation;
+
+                    CurrentBlock = null;
+                    // CurrentBlock.myBody.LinearVelocity = Vector2.Zero;
+                    // CurrentBlock.myBody.IgnoreGravity = false;
+                    // Zapomnij tego klocka jako currenta.
+                    //CurrentBlock = null;
+                }
             }
+
+
         }
         
         /// <summary>
@@ -311,6 +367,29 @@ namespace gtt.MainC
             //OurBlock.Draw(gameTime);
             // Rysowanie odbywa się w klasie GamePage.xaml.cs wlasciwie
         }
+
+
+        #region FUNKCJE I POLA DO DEBUGINGU
+
+        public float rot;
+        public Vector2 pos;
+
+        /// <summary>
+        /// Zwraca ilość bloków leblockOnHisWayżących na platformie
+        /// </summary>
+        /// <returns></returns>
+        public string GetPosOfLastBlock()
+        {
+            return pos.ToString();
+        }
+
+        public string GetRotOFLastBlock()
+        {
+            return rot.ToString();
+        }
+
+        #endregion
+
 
         #endregion
 
