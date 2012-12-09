@@ -299,16 +299,16 @@ namespace gtt.MainC
              *  Ogarnąć sposób obliczania przesunięcia kamery i przesunięcia punktu respawnu klocków
              *  
              * **/
-            /*
-            foreach(Block b in blocksOnPlatform)
+            
+            /*foreach(Block b in blocksOnPlatform)
             {
                 if (b.myBody.LinearVelocity == Vector2.Zero)
                 {
                     if (b.myBody.Position.Y > highestBodyPosition)
                         highestBodyPosition = b.myBody.Position.Y;
                 }
-            }*/
-
+            }
+            */
 
         }
 

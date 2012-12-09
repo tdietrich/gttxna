@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 namespace gtt.MainC
 {
     /// <summary>
@@ -17,5 +16,6 @@ namespace gtt.MainC
 
         void AddTimePlayed(int numof);
 
+        
     }
 }
