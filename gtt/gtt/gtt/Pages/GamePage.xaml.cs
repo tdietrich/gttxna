@@ -169,7 +169,7 @@ namespace gtt
                     1f);
 
                 // Tutaj bedzie przesuwanie ekranu do góry - vector3
-                Vector3 trans = new Vector3(0, game.highestBodyPosition*0.1f, 0);
+                Vector3 trans = new Vector3(0, game.highestBodyPosition*0.05f, 0);
                 
 
                 var view = Matrix.CreateTranslation(trans) * projection;
@@ -223,8 +223,9 @@ namespace gtt
         {
             ScoreText.Text = "Poz:";
             scoreAmount.Text = game.GetPosOfLastBlock();
-            LevelText.Text = "Rot:";
-            LevelAmount.Text = game.GetRotOFLastBlock();
+            LevelText.Text = "";
+           // LevelAmount.Text = game.GetRotOFLastBlock();
+            LevelAmount.Text = "";
         }
     }
 }

@@ -124,7 +124,7 @@ namespace gtt.MainC
             // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
             Settings = new GameSettings(3.0f, 0.01f, 0.2f, new Vector2(0.0f,1.0f),
                                         new Vector2(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width/ 2,40));
-
+            
         }
 
         /// <summary>
@@ -137,6 +137,8 @@ namespace gtt.MainC
             spriteBatch = new SpriteBatch(SharedGraphicsDeviceManager.Current.GraphicsDevice);
             LevelLines = new List<LevelLine>();
 
+          
+            
             // Dodanie linii levelu.
             LevelLines.Add(new LevelLine(250, SharedGraphicsDeviceManager.Current.GraphicsDevice));
             LevelLines.Add(new LevelLine(500, SharedGraphicsDeviceManager.Current.GraphicsDevice));
@@ -300,15 +302,20 @@ namespace gtt.MainC
              *  
              * **/
             
-            /*foreach(Block b in blocksOnPlatform)
+            foreach(Block b in blocksOnPlatform)
             {
-                if (b.myBody.LinearVelocity == Vector2.Zero)
-                {
-                    if (b.myBody.Position.Y > highestBodyPosition)
-                        highestBodyPosition = b.myBody.Position.Y;
-                }
+
+                    if (b.myBody.LinearVelocity == Vector2.Zero)
+                    {
+                        if (b.heightChecked == false)
+                        {
+                            highestBodyPosition += b.myBody.Position.Y;
+                            Settings.spawnPoint.Y -= highestBodyPosition* 2;
+                            b.heightChecked = true;
+                        }
+                    }
             }
-            */
+            
 
         }
 
@@ -375,7 +382,7 @@ namespace gtt.MainC
         public Vector2 pos;
 
         /// <summary>
-        /// Zwraca ilość bloków leblockOnHisWayżących na platformie
+        /// Zwraca pozycje ostatniego bloku
         /// </summary>
         /// <returns></returns>
         public string GetPosOfLastBlock()

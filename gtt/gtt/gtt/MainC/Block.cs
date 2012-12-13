@@ -34,6 +34,7 @@ namespace gtt.MainC
         /// </summary>
         public Body myBody { private set; get; }
 
+        public bool heightChecked;
 
         private Vector2 offset;
 
@@ -88,7 +89,7 @@ namespace gtt.MainC
 
             initialRotation= rotation;
 
-            
+            heightChecked = false;
             // Odpal funkcję inicjalizującą mnie
             InitializeBlock();
         }
