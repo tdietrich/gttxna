@@ -16,6 +16,8 @@ namespace gtt.MainC
 
         void AddTimePlayed(int numof);
 
+        void AddWin();
+
         
     }
 }
