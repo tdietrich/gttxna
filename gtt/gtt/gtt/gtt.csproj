@@ -77,6 +77,7 @@
     <Compile Include="MainC\GameC.cs" />
     <Compile Include="MainC\IPlayer.cs" />
     <Compile Include="MainC\LevelLine.cs" />
+    <Compile Include="MainC\OptionsHandler.cs" />
     <Compile Include="MainC\Player.cs" />
     <Compile Include="MainC\Sprite.cs" />
     <Compile Include="Pages\About.xaml.cs">

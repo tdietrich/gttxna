@@ -34,5 +34,10 @@ namespace gtt.MainC
         {
             throw new NotImplementedException();
         }
+
+        public void AddWin()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

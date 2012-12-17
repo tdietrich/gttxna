@@ -15,6 +15,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using gtt.MainC;
 
 namespace gtt
 {
@@ -83,6 +84,8 @@ namespace gtt
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            // Set default values of physics - frriction and restitution
+            OptionsHandler.SetDefault(3.0f, 0.01f);
         }
 
         // Code to execute when the application is activated (brought to foreground)

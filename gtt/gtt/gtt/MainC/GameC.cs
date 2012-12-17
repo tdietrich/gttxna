@@ -19,7 +19,8 @@ namespace gtt.MainC
     /// TODO:
     ///     - Blok jeszcze nie dotknął innego - kolizje puste a juz leci następny...?
     ///     - Odseparować obsluge inputa do oddzielnej klasy
-    /// 
+    ///     - Dostosować przesuw kamery i spawn pointa ze wzgledu na pozycje bloku zgledem srodka swiata
+    ///     - W getSomething mamy to wedglu czego liczyc kamere
     /// 
     /// W tej chwili opadający klocek znajduje się w zmiennej CurrentBlock
     /// </summary>
@@ -122,7 +123,7 @@ namespace gtt.MainC
         public GameC()
         {
             // Ustawienie defaultowych danych, w calej grze dane są z tej zmiennej brane
-            Settings = new GameSettings(3.0f, 0.01f, 0.2f, new Vector2(0.0f,1.0f),
+            Settings = new GameSettings(OptionsHandler.blocksBounciness, OptionsHandler.blocksFriction, 0.2f, new Vector2(0.0f,1.0f),
                                         new Vector2(SharedGraphicsDeviceManager.Current.GraphicsDevice.Viewport.Width/ 2,40));
             
         }
@@ -338,7 +339,7 @@ namespace gtt.MainC
                     //blocksOnPlatform.Add(CurrentBlock);
                     pos = CurrentBlock.myBody.Position;
                     rot = CurrentBlock.myBody.Rotation;
-
+                    // CurrentBlock.myBody.LinearVelocity = Vector2.Zero;
                     CurrentBlock = null;
                     // CurrentBlock.myBody.LinearVelocity = Vector2.Zero;
                     // CurrentBlock.myBody.IgnoreGravity = false;
@@ -393,6 +394,37 @@ namespace gtt.MainC
         public string GetRotOFLastBlock()
         {
             return rot.ToString();
+        }
+
+        /*
+         * WolrdCenter trzyma odleglosc od srodka swiata, na podstawie tego mozna by ogarniac kamere
+         * jednostki od ok 0 do 6- leży na glebie
+         * w miare jak kamera idzie w gore to zaczynamy od -0.1 -0.2 i dalej w minus - swiat zostaje
+         *
+         * 
+         * TO co teraz jest pokazuje nam od 0 - 6 okolo czyli tak jakby pozycje wzgledem 
+         * world center bedziemy sie przesuwali
+         * spawn    środ      leży
+         * |----------o---------|
+         * |------------o-------|
+         * |-------------o------|
+         * .
+         * .
+         * .
+         * .
+         * |--------------------| o 
+         * 
+         * Jakoś policzyć tą kamerę i spawn
+         * */
+        public string GetSomething()
+        {
+            if (CurrentBlock != null)
+                //return CurrentBlock.myBody.FixtureList[0].Body.Position.Y.ToString();
+                
+                return CurrentBlock.myBody.Position.Y.ToString();
+                //return CurrentBlock.myBody.WorldCenter.Y.ToString();
+            else
+                return "null";
         }
 
         #endregion

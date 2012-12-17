@@ -11,7 +11,7 @@
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True" BackKeyPress="PhoneApplicationPage_BackKeyPress">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
@@ -27,12 +27,11 @@
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
-        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Slider Height="84" HorizontalAlignment="Left" Margin="12,92,0,0" Name="bouncSlider" VerticalAlignment="Top" Width="403" />
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,56,0,0" Name="textBlock1" Text="Blocks Bounciness" VerticalAlignment="Top" FontSize="23" />
+        <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0" Loaded="ContentPanel_Loaded">
             <!-- Wartosc slidera /10, tzn defaultowo wartosc 5 co oznacza friction 0.5-->
-            <Slider Height="84" HorizontalAlignment="Left" Margin="12,195,0,0" Name="frictSlider" VerticalAlignment="Top" Width="403" Value="5" />
-            <TextBlock FontSize="23" Height="30" HorizontalAlignment="Left" Margin="12,159,0,0" Name="textBlock2" Text="Blocks Friction" VerticalAlignment="Top" />
+            <Slider Height="84" HorizontalAlignment="Left" Margin="12,174,0,0" Name="frictSlider" VerticalAlignment="Top" Width="403" Value="3" ValueChanged="frictSlider_ValueChanged" />
+            <TextBlock FontSize="23" Height="30" HorizontalAlignment="Left" Margin="12,138,0,0" Name="textBlock2" Text="Blocks Friction" VerticalAlignment="Top" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="46,307,0,0" Name="textBlock4" Text="TextBlock" VerticalAlignment="Top" />
         </Grid>
     </Grid>
  

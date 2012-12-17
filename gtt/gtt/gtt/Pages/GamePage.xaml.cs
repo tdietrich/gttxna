@@ -225,7 +225,7 @@ namespace gtt
             scoreAmount.Text = game.GetPosOfLastBlock();
             LevelText.Text = "";
            // LevelAmount.Text = game.GetRotOFLastBlock();
-            LevelAmount.Text = "";
+            LevelAmount.Text = game.GetSomething();
         }
     }
 }
